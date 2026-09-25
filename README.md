@@ -1,6 +1,12 @@
-# ContextOS
+<p align="center">
+  <img
+    src="docs/assets/contextos-banner.png"
+    alt="ContextOS — Agent Context Checkpoint System"
+    width="100%"
+  />
+</p>
 
-An inspectable runtime for long-running agents. The transcript is an event log; the authoritative working state is `data/state.json`.
+ContextOS is a stateful runtime for long-horizon AI agents that turns growing histories into compact, mutable context checkpoints. The transcript is an event log; the authoritative working state is `data/state.json`.
 
 ## Deterministic demo
 
@@ -50,7 +56,7 @@ Optional RawTree settings are in `.env.example`. RawTree mirrors structured tele
 - **RawTree:** Optional external mirror for structured runtime telemetry and long-run analytics. Local files remain authoritative.
 - **AWS:** S3 savepoint mirroring is a possible durability extension, not implemented or required for the demo.
 
-Run `npm run contextos:revalidate-demo` for the deterministic v1 → v2 evidence flow, and `npm run contextos:sponsors` to inspect configuration without printing keys. See [sponsor setup](docs/SPONSORS.md) and the [live verification record](docs/LIVE_VERIFICATION.md) for actual provider results. The local Liquid Second Brain is live verified; OpenAI returned HTTP 403, and Nimble and RawTree await source/access configuration.
+Run `npm run contextos:revalidate-demo` for the deterministic v1 → v2 evidence flow, and `npm run contextos:sponsors` to inspect configuration without printing keys. See [sponsor setup](docs/SPONSORS.md) and the [live verification record](docs/LIVE_VERIFICATION.md) for actual provider results. Liquid and Nimble are live verified through ContextOS; OpenAI returned HTTP 403, and RawTree awaits access configuration.
 
 ## Checks
 

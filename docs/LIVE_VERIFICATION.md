@@ -18,11 +18,20 @@ This record contains no credentials. Live checks used isolated, ignored files un
 - First Brain event: `5ee51bd2-377c-4310-93e9-823798553f8d`. Proposal event: `74aecdc4-3d8d-49c0-8dfe-05271d217ea0`. Accepted semantic diff: `diff-3`, state **#2 → #3**, `v1 → v2`. Active canonical fact is v2; v1 is superseded history.
 - The first unconstrained local attempt produced an invalid duplicate fact and left state unchanged. A narrow, evidence-derived JSON schema for explicit fact conflicts fixed the small model's key/value drift. The validator was not relaxed. This result verifies the explicit supersession path; it does not claim that every open-ended maintenance task works with the 350M model.
 
-## Nimble — source URL not configured
+## Nimble — LIVE VERIFIED
 
-- An API key is present locally, but `NIMBLE_ENABLED=false` and `NIMBLE_SOURCE_URL` is empty.
-- No live Extract v2 request was made. The code and mocked HTTP tests remain available; no external evidence or Nimble-backed state mutation is claimed.
-- To verify the combined scenario, configure `NIMBLE_SOURCE_URL` with a stable public HTTPS page containing one unambiguous `api_version: v2` line, enable Nimble, then seed a LIVE fact and run revalidation. The source URL must not contain credentials or query parameters.
+- Source: https://raw.githubusercontent.com/Muzzy5150/ContextOS/main/docs/revalidation-source.json (public HTTP 200; `api_version = v2`).
+- A real ContextOS `NimbleEvidenceProvider` Extract v2 request succeeded and normalized `api_version = v2` in **1,082 ms**. A separate live run through `revalidateFact` measured **2,244 ms** for the Nimble request.
+- Extract v2 returned the JSON source as Markdown with an escaped underscore in `api\_version`. The parser now accepts that Markdown form and one-line JSON keys. No mutation or validation rule was relaxed.
+- In the isolated LIVE run `36016279-69e4-47f5-9843-6ddcb03cebcf`, Nimble produced `external_evidence_received` event `d4a4f475-2970-440d-80dd-d9507609b7d8` at state #1. Its structured evidence was `api_version = v2`; the event retains the public source URL and observation time `2026-09-25T20:56:36.867Z`.
+
+## Nimble + Liquid + ContextOS — LIVE END-TO-END VERIFIED
+
+- The isolated canonical state began at **#1** with active `api_version = v1` and stale freshness metadata. The Nimble evidence event carried `v2` into the existing `revalidateFact` flow.
+- The configured live Liquid Second Brain, model `LiquidAI/lfm2.5-350m`, returned the structured `SUPERSEDE_FACT` proposal `api_version: v1 → v2` with reason referencing the evidence event. Its real model request took **1,159 ms** and reported **169 input / 99 output tokens**.
+- Runtime mutation validation passed. Proposal event `3794562b-d55c-4c53-80fa-0466e4b399d1` led to semantic `diff-2` and canonical state **#1 → #2** through the deterministic mutation engine.
+- State #2 has active `api_version = v2`, fresh metadata, and source event `d4a4f475-2970-440d-80dd-d9507609b7d8`. The old `v1` fact is superseded history. The diff links to both evidence and proposal events. Neither provider wrote canonical state directly.
+- The live verification data is isolated under ignored `data/live-verification/nimble-liquid-e2e/`. A local check found no Nimble or Liquid credential value in persisted state, events, or diffs.
 
 ## RawTree and AWS
 
@@ -37,9 +46,9 @@ This record contains no credentials. Live checks used isolated, ignored files un
 - Autopsy demo: persisted bad `deployment_region` mutation at #6 traced to failure at #9, with #5 suggested as the pre-mutation state.
 - Benchmark: 120 steps, 20,603 estimated history tokens, 210 active-context tokens, 1.0% ratio, 220 maximum active tokens, zero stale canonical API facts.
 - Quality gate: lint, typecheck, **36/36 tests**, and production build passed.
-- Browser: at **1366×768** and **1280×720**, System Bus reported Liquid verified, OpenAI last-test failure, Nimble source missing, and RawTree not configured. Fact Inspector, Recovery, Autopsy, and Benchmark controls worked. No horizontal overflow, framework error overlay, or ContextOS console errors were observed.
+- Earlier browser check, before the Nimble live run: at **1366×768** and **1280×720**, System Bus reported Liquid verified, OpenAI last-test failure, Nimble source missing, and RawTree not configured. Fact Inspector, Recovery, Autopsy, and Benchmark controls worked. No horizontal overflow, framework error overlay, or ContextOS console errors were observed.
 
-The provider status utility reads the persisted Liquid proof and OpenAI failure record. `LIVE VERIFIED` requires a real completed model call linked to a proposal, semantic diff, and matching canonical fact.
+The provider status utility reads the persisted Liquid proof, OpenAI failure record, and isolated Nimble revalidation proof. Nimble displays `LIVE VERIFIED` only while its configured public source matches the persisted evidence event, linked proposal/diff, and current canonical fact.
 
 ## Credential handling
 

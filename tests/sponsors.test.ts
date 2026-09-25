@@ -44,14 +44,14 @@ test("Nimble Extract v2 request normalizes fresh evidence and keeps API key out 
   const provider = new NimbleEvidenceProvider({ apiKey: "nimble-test-secret", fetchImpl: async (url, init) => {
     requested = String(url); authorization = new Headers(init?.headers).get("Authorization") ?? "";
     assert.deepEqual(JSON.parse(String(init?.body)), { url: "https://docs.example.test/version", formats: ["markdown"] });
-    return new Response(JSON.stringify({ status: "success", data: { markdown: "# Current release\napi_version: v2\n" }, status_code: 200 }), { status: 200 });
+    return new Response(JSON.stringify({ status: "success", data: { markdown: '{ "api\\_version": "v2", "status": "current" }' }, status_code: 200 }), { status: 200 });
   } });
   const result = await provider.fetchEvidence({ factKey: "api_version", currentValue: "v1", sourceUrl: "https://docs.example.test/version" });
   assert.equal(requested, "https://sdk.nimbleway.com/v2/extract");
   assert.equal(authorization, "Bearer nimble-test-secret");
   assert.equal(result.value, "v2");
   assert.equal(JSON.stringify(result).includes("nimble-test-secret"), false);
-  assert.equal(JSON.stringify(result).includes("# Current release"), false);
+  assert.equal(JSON.stringify(result).includes("current"), false);
 });
 
 test("Nimble failures and ambiguous content preserve canonical state", async () => withStore(async (store) => {

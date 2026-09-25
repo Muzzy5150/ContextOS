@@ -21,7 +21,7 @@ async function main() {
     console.log("CONTEXTOS / SPONSOR DEVICES");
     console.log(`OPENAI    ${first.provider === "openai" && first.ready ? `CONFIGURED / ${first.model} / ${verification.openai.status}${verification.openai.errorCode ? ` / ${verification.openai.errorCode}` : ""}` : "NOT CONFIGURED"}`);
     console.log(`LIQUID    ${second.provider === "liquid" && second.ready ? `CONFIGURED / ${second.model} / ${verification.liquid.status}` : "NOT CONFIGURED"}`);
-    console.log(`NIMBLE    ${nimble.configured ? "CONFIGURED / LIVE UNVERIFIED" : `NOT CONFIGURED / ${!process.env.NIMBLE_SOURCE_URL ? "SOURCE URL MISSING" : nimble.issue ?? "DISABLED"}`}`);
+    console.log(`NIMBLE    ${nimble.configured ? `CONFIGURED / ${verification.nimble.status === "LIVE VERIFIED" ? "LIVE VERIFIED" : "LIVE UNVERIFIED"}` : `NOT CONFIGURED / ${!process.env.NIMBLE_SOURCE_URL ? "SOURCE URL MISSING" : nimble.issue ?? "DISABLED"}`}`);
     console.log(`RAWTREE   ${rawtree.enabled && rawtree.apiKey ? "CONFIGURED / QUERY TO VERIFY" : "NOT CONFIGURED"}`);
     console.log("AWS S3    OPTIONAL / NOT IMPLEMENTED");
     if (process.argv[3] === "--verify-liquid") {

@@ -52,10 +52,10 @@ export class NimbleEvidenceProvider implements EvidenceProvider {
     if (!payload || typeof payload !== "object") throw new EvidenceError("UNSUPPORTED_RESPONSE", "Nimble response is not an object");
     const result = payload as { status?: unknown; data?: { markdown?: unknown; html?: unknown }; status_code?: unknown };
     if (result.status !== "success" || (typeof result.status_code === "number" && result.status_code >= 400)) throw new EvidenceError("UNSUPPORTED_RESPONSE", "Nimble extraction did not succeed");
-    const raw = typeof result.data?.markdown === "string" ? result.data.markdown : typeof result.data?.html === "string" ? result.data.html.replace(/<[^>]*>/g, "\n") : "";
+    const raw = (typeof result.data?.markdown === "string" ? result.data.markdown : typeof result.data?.html === "string" ? result.data.html.replace(/<[^>]*>/g, "\n") : "").replace(/\\_/g, "_");
     if (!raw.trim()) throw new EvidenceError("EMPTY_RESULT", "Nimble returned no extractable content");
     const escaped = request.factKey.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const matches = [...raw.matchAll(new RegExp(`(?:^|\\n)\\s*["']?${escaped}["']?\\s*[:=]\\s*["']?([A-Za-z0-9._-]{1,80})`, "gim"))].map((match) => match[1]);
+    const matches = [...raw.matchAll(new RegExp(`(?:^|\\n|[,{])\\s*["']?${escaped}["']?\\s*[:=]\\s*["']?([A-Za-z0-9._-]{1,80})`, "gim"))].map((match) => match[1]);
     const values = [...new Set(matches)];
     if (values.length !== 1) throw new EvidenceError("UNSUPPORTED_RESPONSE", `Nimble source must contain one unambiguous ${request.factKey}: value`);
     const observedAt = new Date().toISOString();
