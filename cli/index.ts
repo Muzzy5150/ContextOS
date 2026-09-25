@@ -132,6 +132,28 @@ async function main() {
     if (!pass) process.exitCode = 1;
     return;
   }
+  if (command === "roblox-demo") {
+    const { runRobloxCheckpointDemo } = await import("../packages/agent/roblox-demo");
+    const proof = await runRobloxCheckpointDemo();
+    console.log("CONTEXTOS / CONTROLLED ROBLOX CHECKPOINT DEMO");
+    console.log(`RUN             ${proof.runId}`);
+    console.log(`MISSION         ${proof.savepoint.mission}`);
+    console.log(`CONTEXT POINTS  RED SPAWN FIXED / TRAVERSAL 42/48 / BLUE SPAWN PENDING`);
+    console.log(`SAVEPOINT       ${proof.savepoint.id} / STATE #${proof.savepoint.stateVersion} / ${proof.savepointBytes} bytes / SHA-256 VERIFIED`);
+    console.log(`OLD WORKER      PID ${proof.oldPid}`);
+    console.log(`WORKER LOST     PID ${proof.termination.pid} / ${proof.termination.signal} / GONE ${proof.termination.gone}`);
+    console.log(`FRESH WORKER    PID ${proof.newPid}`);
+    console.log(`RESTORE         #${proof.restored.savedStateVersion} → #${proof.restored.resultingStateVersion}`);
+    console.log(`HISTORY REPLAYED ${proof.freshContext.historyEventsReplayed} events`);
+    console.log(`FRESH CONTEXT   ${proof.freshContext.estimatedTokens} estimated tokens / NEXT ${proof.freshContext.nextAction}`);
+    console.log(`MISSION CONTINUED #${proof.continued.stateVersion} / BLUE SPAWN ${proof.continued.verified ? "PASS" : "FAIL"}`);
+    console.log(`REQUIREMENT     #${proof.requirementDiff.stateVersion} / CLEARANCE ${proof.requirementDiff.before} → ${proof.requirementDiff.after}`);
+    console.log(`CONTROLLED FAULT #${proof.faultDiff.stateVersion} / BLUE SPAWN ${proof.faultDiff.before} → ${proof.faultDiff.after}`);
+    console.log(`FAILURE         ${proof.failure.id} / STATE #${proof.failure.stateVersion} / EXPECTED ${proof.failure.expected?.blue_spawn} / ACTUAL ${proof.failure.actual?.blue_spawn}`);
+    console.log(`AUTOPSY         ${proof.report.id} / ORIGIN #${proof.report.suspectedOrigin?.stateVersion} / ${proof.report.suspectedOrigin?.diffId} / PRE-MUTATION #${proof.report.recommendedHealthyVersion}`);
+    console.log("ROBLOX CHECKPOINT DEMO PASS");
+    return;
+  }
   if (command === "save") {
     const { savepoint, bytes } = await createSavepoint(storage as import("../packages/core/storage").JsonFileStorage);
     console.log(`SAVEPOINT ${savepoint.id} / STATE #${savepoint.stateVersion} / ${bytes} bytes`); return;

@@ -8,6 +8,16 @@
 
 ContextOS is a stateful runtime for long-horizon AI agents that turns growing histories into compact, mutable context checkpoints. The transcript is an event log; the authoritative working state is `data/state.json`.
 
+## Why Checkpoints?
+
+Video games preserve progress through checkpoints instead of replaying everything that happened before them. ContextOS applies the same idea to long-running agents: it converts growing history into structured context points—facts, decisions, constraints, open tasks, and next actions—and checkpoints that state so a fresh worker can resume without replaying the full transcript.
+
+```text
+History → ContextOS → Context points → Savepoint → Fresh worker → Continue
+```
+
+The [controlled Roblox checkpoint demo](docs/ROBLOX_DEMO.md) uses an FPS map mission to show real savepoint persistence, exact worker PID death, zero-event restore, mission continuation, state diffs, and Autopsy. The Roblox map observations are deterministic; ContextOS does not control Roblox Studio. The existing 120-step benchmark measures 20,603 estimated history tokens versus 210 active-context tokens. Liquid and Nimble have been verified live in a separate revalidation run.
+
 ## Deterministic demo
 
 ```bash
@@ -41,11 +51,12 @@ npm run dev
 npm run contextos:demo
 npm run contextos:recovery-demo
 npm run contextos:autopsy-demo
+npm run contextos:roblox-demo
 npm run contextos:benchmark
 npm run dev
 ```
 
-The dashboard links to **Context**, **Recovery**, **Autopsy**, and **Benchmark** sections. Its controls run real local operations. The recovery demo kills its owned worker PID, starts a fresh process, verifies a savepoint, and continues the mission. The Autopsy scenario records a controlled deployment failure and traces it to a persisted state diff. The benchmark runs 120 deterministic steps with one event stream for both payload constructions. See [recovery](docs/RECOVERY.md), [Autopsy](docs/AUTOPSY.md), and [telemetry and benchmark](docs/FINAL_DEMO.md).
+The dashboard links to **Context**, **Recovery**, **Checkpoint Demo**, **Autopsy**, and **Benchmark** sections. Its controls run real local operations. The recovery demo kills its owned worker PID, starts a fresh process, verifies a savepoint, and continues the mission. The Autopsy scenario records a controlled deployment failure and traces it to a persisted state diff. The benchmark runs 120 deterministic steps with one event stream for both payload constructions. See [recovery](docs/RECOVERY.md), [Autopsy](docs/AUTOPSY.md), [controlled Roblox presentation](docs/ROBLOX_DEMO.md), and [telemetry and benchmark](docs/FINAL_DEMO.md).
 
 Optional RawTree settings are in `.env.example`. RawTree mirrors structured telemetry and never stores canonical state. With no key, the dashboard reports **NOT CONFIGURED**.
 

@@ -17,6 +17,7 @@
     "contextos:restore": "node --import tsx cli/index.ts restore",
     "contextos:recovery-demo": "node --import tsx cli/index.ts recovery-demo",
     "contextos:autopsy-demo": "node --import tsx cli/index.ts autopsy-demo",
+    "contextos:roblox-demo": "node --import tsx cli/index.ts roblox-demo",
     "contextos:benchmark": "node --import tsx cli/index.ts benchmark",
     "contextos:rawtree-query": "node --import tsx cli/index.ts rawtree-query",
     "contextos:revalidate-demo": "node --import tsx cli/index.ts revalidate-demo",

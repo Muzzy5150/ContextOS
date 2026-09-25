@@ -5,6 +5,7 @@ import { createSavepoint, restoreSavepoint } from "../packages/core/savepoints";
 import { continueRecoveryMission, prepareRecoveryMidpoint, recoveryContext } from "../packages/agent/recovery";
 import { advanceDemo, resetDemo } from "../packages/agent/runtime";
 import { createTelemetryPipeline } from "../packages/telemetry";
+import { continueRobloxMission, failRobloxVerification, injectRobloxFault, prepareRobloxCheckpoint, robloxRunForStore, robloxWorkerContext, supersedeRobloxRequirement } from "../scenarios/roblox-checkpoint-demo";
 
 const workerDirectory = process.env.CONTEXTOS_DATA_DIR ?? resolve(process.cwd(), "data");
 const store = new JsonFileStorage(workerDirectory, createTelemetryPipeline(workerDirectory));
@@ -24,6 +25,12 @@ lineReader.on("line", async (line) => {
       case "restore": if (!request.savepointId) throw new Error("SAVEPOINT NOT FOUND"); result = await restoreSavepoint(store, request.savepointId); break;
       case "reset": result = { stateVersion: (await resetDemo(store)).state.stateVersion }; break;
       case "advance": result = { stateVersion: (await advanceDemo(store)).state.stateVersion }; break;
+      case "roblox-prepare": result = await prepareRobloxCheckpoint(await robloxRunForStore(store)); break;
+      case "roblox-context": result = await robloxWorkerContext(await robloxRunForStore(store)); break;
+      case "roblox-continue": result = await continueRobloxMission(await robloxRunForStore(store)); break;
+      case "roblox-requirement": result = await supersedeRobloxRequirement(await robloxRunForStore(store)); break;
+      case "roblox-fault": result = await injectRobloxFault(await robloxRunForStore(store)); break;
+      case "roblox-failure": result = await failRobloxVerification(await robloxRunForStore(store)); break;
       case "shutdown": process.stdout.write(JSON.stringify({ id, ok: true, result: { pid: process.pid } }) + "\n", () => process.exit(0)); return;
       default: throw new Error("Unknown worker action");
     }
