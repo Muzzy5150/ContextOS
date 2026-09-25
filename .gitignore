@@ -1,0 +1,15 @@
+node_modules/
+.next/
+apps/web/.next/
+dist/
+build/
+*.log
+*.tsbuildinfo
+.DS_Store
+.env
+.env.*
+!.env.example
+.rocketride/
+.claude/
+.github/copilot-instructions.md
+data/
