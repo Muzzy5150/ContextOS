@@ -18,6 +18,10 @@ History → ContextOS → Context points → Savepoint → Fresh worker → Cont
 
 The [controlled Roblox checkpoint demo](docs/ROBLOX_DEMO.md) uses an FPS map mission to show real savepoint persistence, exact worker PID death, zero-event restore, mission continuation, state diffs, and Autopsy. The Roblox map observations are deterministic; ContextOS does not control Roblox Studio. The existing 120-step benchmark measures 20,603 estimated history tokens versus 210 active-context tokens. Liquid and Nimble have been verified live in a separate revalidation run.
 
+## Checkpoint Demo
+
+**Context points are the game state. Savepoints are the checkpoints.** Start the web app with `npm run dev`, open [the self-contained presentation](http://localhost:3000/demo/roblox), and click **RUN FULL DEMO**. The controlled ATOM TOWN workload shows persistent facts and tasks, a real worker process killed and replaced, zero-event restore, mission continuation, mutable state, and Agent Autopsy. The map schematic represents deterministic inputs; ContextOS does not control Roblox Studio. [Presenter instructions](docs/ROBLOX_DEMO.md) and `npm run contextos:roblox-demo` provide a narrated guide and terminal fallback.
+
 ## Deterministic demo
 
 ```bash

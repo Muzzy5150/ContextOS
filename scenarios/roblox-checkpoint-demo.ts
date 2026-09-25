@@ -93,17 +93,38 @@ async function requireState(run: RobloxRun, condition: (state: AgentState) => bo
 }
 
 export async function prepareRobloxCheckpoint(run: RobloxRun) {
+  await inspectRobloxMap(run);
+  await decideRedSpawn(run);
+  await recordTraversalProgress(run);
+  await observation(run, "action_observed", "Red spawn corrected; traversal 42/48; Blue spawn verification remains.", { detail: "roblox-stage:prepared" });
+  return stateFor(run);
+}
+
+export async function inspectRobloxMap(run: RobloxRun) {
   await requireState(run, (state) => state.stateVersion === 1 && active(state, "red_spawn_exposed") === "true", "ROBLOX MISSION NOT READY");
-  const source = await observation(run, "tool_result", "Controlled map inspection: Red spawn is exposed; moving it behind House B cover. Traversal checks pass 42 of 48.", { relatedStateKeys: ["red_spawn_exposed", "traversal_tests_passed"] });
-  await observation(run, "second_brain_analysis", "Durable map findings classified as context-point changes.", { role: "second", provider: "deterministic", sourceEventId: source.id });
+  const source = await observation(run, "tool_result", "Controlled map inspection: Red spawn is exposed to Mid Lane.", { relatedStateKeys: ["red_spawn_exposed"] });
+  await mutate(run, { type: "ADD_OPEN_LOOP", text: "Fix Red spawn exposure.", reason: "Direct spawn-to-mid sightline observed." }, source);
+  return stateFor(run);
+}
+
+export async function decideRedSpawn(run: RobloxRun) {
+  const state = await requireState(run, (value) => active(value, "red_spawn_exposed") === "true" && value.openLoops.some((loop) => loop.status === "active" && loop.text === "Fix Red spawn exposure."), "RED SPAWN DECISION NOT READY");
+  const source = await observation(run, "tool_result", "Controlled map change: Red spawn moved behind House B cover.", { relatedStateKeys: ["red_spawn_exposed"] });
+  await observation(run, "second_brain_analysis", "Red spawn correction classified as durable context.", { role: "second", provider: "deterministic", sourceEventId: source.id });
+  await mutate(run, { type: "SUPERSEDE_FACT", key: "red_spawn_exposed", oldValue: "true", newValue: "false", reason: "Controlled map inspection placed Red spawn behind House B cover." }, source);
+  await mutate(run, { type: "ADD_DECISION", text: "Move Red spawn behind House B cover.", reason: "Block direct spawn-to-mid sightline." }, source);
+  await mutate(run, { type: "RESOLVE_OPEN_LOOP", id: state.openLoops.find((loop) => loop.status === "active" && loop.text === "Fix Red spawn exposure.")!.id, reason: "Red spawn repositioned behind cover." }, source);
+  return stateFor(run);
+}
+
+export async function recordTraversalProgress(run: RobloxRun) {
+  await requireState(run, (state) => active(state, "red_spawn_exposed") === "false" && active(state, "traversal_tests_passed") === "0", "TRAVERSAL NOT READY");
+  const source = await observation(run, "tool_result", "Controlled traversal checks pass 42 of 48; Blue spawn sightline remains unverified.", { relatedStateKeys: ["traversal_tests_passed", "blue_spawn"] });
   for (const proposal of [
-    { type: "SUPERSEDE_FACT", key: "red_spawn_exposed", oldValue: "true", newValue: "false", reason: "Controlled map inspection placed Red spawn behind House B cover." },
-    { type: "ADD_DECISION", text: "Move Red spawn behind House B cover.", reason: "Block direct spawn-to-mid sightline." },
     { type: "UPDATE_FACT", key: "traversal_tests_passed", value: "42", reason: "Controlled traversal test passed 42 of 48 checks." },
     { type: "ADD_OPEN_LOOP", text: "Verify Blue spawn sightline.", reason: "Six traversal checks remain and Blue spawn needs confirmation." },
     { type: "ADD_NEXT_ACTION", text: "Run Blue spawn verification.", reason: "Continue the unresolved map test after checkpoint." }
   ] as Mutation[]) await mutate(run, proposal, source);
-  await observation(run, "action_observed", "Red spawn corrected; traversal 42/48; Blue spawn verification remains.", { detail: "roblox-stage:prepared" });
   return stateFor(run);
 }
 

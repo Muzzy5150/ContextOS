@@ -21,14 +21,14 @@ test("controlled Roblox mission creates validated context points with persisted 
   assert.equal(activeFacts(initial!).find((item) => item.key === "blue_spawn")?.value, "north");
   assert.equal(initial?.constraints[0].text, "Maintain fair sightlines; no direct spawn-to-mid visibility.");
   const prepared = await prepareRobloxCheckpoint(run);
-  assert.equal(prepared.stateVersion, 6);
+  assert.equal(prepared.stateVersion, 8);
   assert.equal(activeFacts(prepared).find((item) => item.key === "red_spawn_exposed")?.value, "false");
   assert.equal(prepared.facts.find((item) => item.key === "red_spawn_exposed" && item.value === "true")?.status, "superseded");
   assert.equal(prepared.openLoops.find((item) => item.status === "active")?.text, "Verify Blue spawn sightline.");
   assert.equal(prepared.nextActions.find((item) => item.status === "active")?.text, "Run Blue spawn verification.");
   const diffs = await run.store.loadDiffs();
   const events = await run.store.loadEvents();
-  assert.equal(diffs.length, 5);
+  assert.equal(diffs.length, 7);
   assert.ok(diffs.every((diff) => diff.sourceEventId && diff.mutationProposalEventId && events.some((entry) => entry.id === diff.mutationProposalEventId && entry.type === "mutation_proposed")));
 }));
 
