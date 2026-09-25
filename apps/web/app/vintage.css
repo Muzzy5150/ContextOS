@@ -9,7 +9,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--ink);outline-offset
 ::selection{background:#222;color:var(--paper)}
 ::-webkit-scrollbar{height:12px;width:12px;background:#d0cec3}
 ::-webkit-scrollbar-thumb{background:#9c998e;border:1px solid #1d1d1d;box-shadow:inset 1px 1px #e7e5db}
-.shell{max-width:1400px;margin:0 auto;padding:14px 20px 24px}
+.shell{width:100%;margin:0;padding:14px 20px 24px}
 .menu-bar{height:30px;position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:0;padding:0 14px;background:var(--paper);border-bottom:2px solid var(--border);box-shadow:0 1px 0 #eee;white-space:nowrap;font-size:12px}
 body{padding-top:30px}
 .menu-bar a{height:28px;display:flex;align-items:center;padding:0 12px;color:var(--ink);text-decoration:none}
