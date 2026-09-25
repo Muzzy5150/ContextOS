@@ -1,0 +1,6 @@
+{
+  "api_version": "v2",
+  "status": "current",
+  "product": "ContextOS Demo API",
+  "message": "The current supported API version is v2."
+}
